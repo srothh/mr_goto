@@ -130,7 +130,7 @@ class MRMove(Node):
                             if c[0] not in self.explored:
                                 self.explored[(c[0].x,c[0].y,c[0].deg)] = c[0]
 
-                            self.explored[(c[0].x,c[0].y,c[0].deg)].distance -= (self.explored[(c[0].x,c[0].y,c[0].deg)].distance * 0.00005)
+                            self.explored[(c[0].x,c[0].y,c[0].deg)].distance -= (self.explored[(c[0].x,c[0].y,c[0].deg)].distance * 0.00025)
 
             for i in range(8):
                 cell = neighbourhood[i]
