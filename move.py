@@ -24,11 +24,10 @@ class MRMove(Node):
         self.ground_x = -7.0
         self.ground_y = -7.0
         self.ground_angle = 45
-        self.start = (-1,-1)
-        self.cell_size = 0.3
+        self.cell_size = 0.1
         self.visited = []
         self.explored = {}
-        self.chosen = Cell(-1,-1,-1,-1,-1)
+        self.chosen = Cell(-1,-1,-1, 45.0,-1)
         self.subscription = self.create_subscription(
             LaserScan,
             'scan',
@@ -74,8 +73,6 @@ class MRMove(Node):
 
     #GoTo
     def plan(self,msg:LaserScan):
-        if self.start == (-1,-1):
-            self.start = (self.ground_x,self.ground_y)
         self.blocked = []
         clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
         nr_of_scans = len(msg.ranges)
@@ -106,31 +103,35 @@ class MRMove(Node):
                             Cell(round(x,1),round(y,1)-self.cell_size,math.dist([round(x,1),round(y,1)-self.cell_size],[goal_x,goal_y]) ,-90.0,4)]
             #Increase cost of cells in direction of obstacles and decrease cost of cells away
             #TODO does not work correctly
+            blocked = False
             for i in range(nr_of_scans):
-                if msg.ranges[i] < 1.:
+                if msg.ranges[i] < 1.5:
+                    blocked = True
                     angle = current_cell.deg + (135 - (270-i))
                     angle = (angle + 180) % 360 - 180
 
                     angle = self.round_to_closest(angle,[0,45,-45,180,90,-90,135,-135],10)
-                    self.get_logger().info(str(angle))
-
                     for cell in neighbourhood:
                         if (cell.x,cell.y,cell.deg) in self.explored:
                             cell = self.explored[cell.x,cell.y,cell.deg] 
-                        if cell.deg == angle and not cell.penalised:
+                        if cell.deg == angle and not cell.penalised and cell.distance > 1:
                             cell.penalised = True
-                            cell.distance *=2 
-                if msg.ranges[i] > 2.:
-                    angle = current_cell.deg + (135 - i)
-                    angle = (angle + 180) % 360 - 180
-                    angle = self.round_to_closest(angle,[0,45,-45,180,90,-90,135,-135],10)
-                    for cell in neighbourhood:
-                        if (cell.x,cell.y,cell.deg) in self.explored:
-                            cell = self.explored[cell.x,cell.y,cell.deg] 
-                        if cell.deg == angle and not cell.penalised:
-                            cell.penalised = True
-                            cell.distance -= cell.distance*0.1
+                            self.visited.append((cell.x,cell.y,cell.deg))
             #Get neighbourhood if explored
+                if self.turned and blocked:
+                    blocked = False
+                    for i in range (-15,16):
+                        blocked = msg.ranges[round(nr_of_scans/2) + i] < 1.
+                        if blocked:
+                            break
+                    if not blocked and self.chosen.deg in [0,45,-45,180,90,-90,135,-135]:
+                        c = [cell for cell in neighbourhood if cell.deg == self.chosen.deg and cell.distance > 1.]
+                        if len(c) > 0:
+                            if c[0] not in self.explored:
+                                self.explored[(c[0].x,c[0].y,c[0].deg)] = c[0]
+
+                            self.explored[(c[0].x,c[0].y,c[0].deg)].distance -= (self.explored[(c[0].x,c[0].y,c[0].deg)].distance * 0.00005)
+
             for i in range(8):
                 cell = neighbourhood[i]
                 if (cell.x, cell.y, cell.deg) not in self.explored:
@@ -138,18 +139,21 @@ class MRMove(Node):
                 #If already encountered, get cost value 
                 neighbourhood[i] = self.explored[cell.x,cell.y, cell.deg]
             sorted_neighbourhood = sorted(neighbourhood, key=lambda cell: cell.distance)
-            #Pick best node that is not blocked
-            for cell in sorted_neighbourhood:
 
+            #Pick best node that is not blocked
+            blocked = False
+            for cell in sorted_neighbourhood:
+                
                 if not (cell.x,cell.y,cell.deg) in self.visited and self.turned:
                     self.chosen = cell
-
                     break
+
             #Turned, move towards goal cell if not blocked, else add to visited(blocked)
             if abs(self.chosen.deg - self.ground_angle) < 0.01:
-                blocked = False
                 for i in range (-15,16):
-                    if(msg.ranges[round(nr_of_scans/2) + i] < 1.75 ) :
+                    if(msg.ranges[round(nr_of_scans/2) + i] < 1.5 - (abs(i))/50) and self.chosen.distance > 1.5 - (abs(i))/50 :
+                        self.get_logger().info('Blocked')
+
                         blocked = True
                 if not blocked:
                     self.cmd.linear.x = 0.2
