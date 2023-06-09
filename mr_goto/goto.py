@@ -6,6 +6,8 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg._odometry import Odometry 
 from std_msgs.msg import String
+from std_srvs.srv import Trigger
+
 from tf_transformations import euler_from_quaternion
 class MRGoto(Node):
 
@@ -13,6 +15,7 @@ class MRGoto(Node):
         super().__init__('move')
         self.publisher_ = self.create_publisher(Twist, 'cmd_vel', 10)
         self.explored_publisher_ = self.create_publisher(String,'explored',10)
+        self.explored_service = self.create_service(Trigger,'explored_area',self.callback_explored)
         self.explored_area = 0.0
 
         timer_period = 0.5  # seconds
@@ -54,6 +57,11 @@ class MRGoto(Node):
 
         self.get_logger().info('Publishing: "{0}, {1}"'.format(self.cmd.linear.x, self.cmd.angular.z))
 
+    def callback_explored(self,request,response):
+        response.success = True
+        response.message = "Explored " + str(round(self.explored_area,3)) + " m2"
+        self.get_logger().info('Explored Area service called. Response: "%s"' % response.message)
+        return response
     #GoTo
     def callback_ground_truth(self,msg):
         #TODO: REPLACE WITH LOCALIZATION
