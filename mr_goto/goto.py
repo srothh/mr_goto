@@ -50,6 +50,8 @@ class MRGoto(Node):
         msg = String()
         msg.data = "Explored " + str(round(self.explored_area,3)) + " m2"
         self.explored_publisher_.publish(msg)
+        self.get_logger().info("Explored " + str(round(self.explored_area,3)) + " m2")
+
         self.get_logger().info('Publishing: "{0}, {1}"'.format(self.cmd.linear.x, self.cmd.angular.z))
 
     #GoTo
