@@ -1,0 +1,38 @@
+goto:
+  ros__parameters:
+    alevel: 0
+    base_link: base_link
+    filter_update_cycle: 100
+    map_file: ./ws02/install/mr_pf/share/mr_pf/config/maps/cave.png
+    map_link: map
+    motion_model.alpha1: 0.1
+    motion_model.alpha2: 0.0
+    motion_model.alpha3: 1.0
+    motion_model.alpha4: 0.1
+    motion_model.alpha5: 0.3
+    motion_model.alpha6: 0.1
+    motion_model.disable: false
+    motion_model.duration_offset: 0.0
+    nr_of_samples: 500
+    parameter_update_cycle: 2000
+    qos_overrides./clock.subscription.depth: 1
+    qos_overrides./clock.subscription.durability: volatile
+    qos_overrides./clock.subscription.history: keep_last
+    qos_overrides./clock.subscription.reliability: best_effort
+    qos_overrides./parameter_events.publisher.depth: 1000
+    qos_overrides./parameter_events.publisher.durability: volatile
+    qos_overrides./parameter_events.publisher.history: keep_last
+    qos_overrides./parameter_events.publisher.reliability: reliable
+    resample.continues_reset: false
+    resample.noise_orientation: 0.0
+    resample.noise_position: 0.5
+    resample.rate: 0.05
+    resample.strategy: low variance
+    sensor_model.random_beams: false
+    sensor_model.rate_of_beams_used: 0.2
+    sensor_model.sigma_hit: 0.5
+    sensor_model.z_hit: 0.7
+    sensor_model.z_max: 5.0
+    sensor_model.z_rand: 0.4
+    sensor_model.z_short: 0.1
+    use_sim_time: true
