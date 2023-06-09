@@ -1,4 +1,3 @@
-
 import rclpy
 import numpy as np
 from rclpy.node import Node
@@ -7,7 +6,7 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg._odometry import Odometry 
 from tf_transformations import euler_from_quaternion
-class MRMove(Node):
+class MRGoto(Node):
 
     def __init__(self):
         super().__init__('move')
@@ -275,7 +274,7 @@ class MRMove(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    minimal_publisher = MRMove()
+    minimal_publisher = MRGoto()
 
     rclpy.spin(minimal_publisher)
     minimal_publisher.destroy_node()
