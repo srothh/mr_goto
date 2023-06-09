@@ -5,16 +5,24 @@ import math
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg._odometry import Odometry 
+from std_msgs.msg import String
+from std_srvs.srv import Trigger
+
 from tf_transformations import euler_from_quaternion
 class MRGoto(Node):
 
     def __init__(self):
         super().__init__('move')
         self.publisher_ = self.create_publisher(Twist, 'cmd_vel', 10)
+        self.explored_publisher_ = self.create_publisher(String,'explored',10)
+        self.explored_service = self.create_service(Trigger,'explored_area',self.callback_explored)
+        self.explored_area = 0.0
+
         timer_period = 0.5  # seconds
         self.declare_parameter('mode', 'demo')
         self.declare_parameter('x', 0.0)
         self.declare_parameter('y', 0.0)
+        self.declare_parameter('deg', 0.0)
         self.cmd = Twist()
         self.turned = True
         self.timer = self.create_timer(timer_period, self.timer_callback)
@@ -43,8 +51,18 @@ class MRGoto(Node):
     def timer_callback(self):
         self.param_mode = self.get_parameter('mode').get_parameter_value().string_value
         self.publisher_.publish(self.cmd)
+        msg = String()
+        msg.data = "Explored " + str(round(self.explored_area,3)) + " m2"
+        self.explored_publisher_.publish(msg)
+        self.get_logger().info("Explored " + str(round(self.explored_area,3)) + " m2")
+
         self.get_logger().info('Publishing: "{0}, {1}"'.format(self.cmd.linear.x, self.cmd.angular.z))
 
+    def callback_explored(self,request,response):
+        response.success = True
+        response.message = "Explored " + str(round(self.explored_area,3)) + " m2"
+        self.get_logger().info('Explored Area service called. Response: "%s"' % response.message)
+        return response
     #GoTo
     def callback_ground_truth(self,msg):
         #TODO: REPLACE WITH LOCALIZATION
@@ -79,17 +97,41 @@ class MRGoto(Node):
         self.cmd.linear.x = 0.0
         x = round(self.ground_x,1)
         y = round(self.ground_y,1)
-        a = self.ground_angle
+        angle = self.ground_angle
+        rounded_angle = round(angle, 2)
         goal_x = self.get_parameter('x').get_parameter_value().double_value
         goal_y = self.get_parameter('y').get_parameter_value().double_value
-        current_cell = Cell(round(x,1),round(y,1),math.dist([x,y],[goal_x,goal_y]),self.round_to_closest(a,[0,45,-45,180,90,-90,135,-135],45), -1)
+        goal_deg = self.get_parameter('deg').get_parameter_value().double_value
+
+        current_cell = Cell(round(x,1),round(y,1),math.dist([x,y],[goal_x,goal_y]),self.round_to_closest(angle,[0,45,-45,180,90,-90,135,-135],45), -1)
         self.turned = abs(self.chosen.deg - self.ground_angle) < 0.01 
 
-        goal_cell = Cell(round(goal_x,1),round(goal_y,1),0,0,-1)
+        goal_cell = Cell(round(goal_x,1),round(goal_y,1),0,round(goal_deg,2),-1)
+
+        if current_cell.x == self.chosen.x and current_cell.y == self.chosen.y and not self.chosen.explored:
+            self.chosen.explored = True
+            self.explored_area += round(self.cell_size * self.cell_size,3)
+
         if goal_cell.x == current_cell.x and goal_cell.y == current_cell.y:
-            self.get_logger().info('At goal')
-            self.cmd.angular.z = 0.0
-            self.cmd.linear.x = 0.0
+            if rounded_angle == goal_cell.deg:
+                self.get_logger().info('At goal Pose')
+                self.cmd.angular.z = 0.0
+                self.cmd.linear.x = 0.0
+            else:
+                self.get_logger().info('At goal Position')
+                print("angle: ", goal_cell.deg)
+                
+                if goal_cell.deg > 0:
+                    angle_delta = goal_cell.deg - rounded_angle
+                    if abs(angle_delta) >= 180:
+                        angle_delta = -(goal_cell.deg + rounded_angle)
+                else:
+                    angle_delta = -(-goal_cell.deg + rounded_angle)
+                    if abs(angle_delta) >= 180:
+                        angle_delta = (goal_cell.deg - rounded_angle)
+
+                self.cmd.angular.z = 0.02 * angle_delta
+            
         else:
             #Generate neighbourhood
             neighbourhood = [Cell(round(x,1)+self.cell_size,round(y,1)+self.cell_size,math.dist([round(x,1)+self.cell_size,round(y,1)+self.cell_size],[goal_x,goal_y]) ,45.0,1),
@@ -293,3 +335,4 @@ class Cell:
         self.deg = deg
         self.index = index
         self.penalised = False
+        self.explored = False
