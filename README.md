@@ -103,7 +103,7 @@ export ROS_SECURITY_STRATEGY=Enforce
 ```
 For this env_vars.sh has to be sourced.
 
-The launch files need to include a parameter enclave. e.g. for stage the parameters list has to be appended by enclave:
+The launch files need to include a parameter enclave. e.g. for stage.launch.py the parameters list has to be appended by enclave:
 ```
 parameters=[{
     "world_file": [LaunchConfiguration('world_file')],
