@@ -102,6 +102,13 @@ export ROS_SECURITY_ENABLE=true
 export ROS_SECURITY_STRATEGY=Enforce
 ```
 For this env_vars.sh has to be sourced.
+
+The launch files need to include a parameter enclave. e.g. for stage the parameters list has to be appended by enclave:
+```
+parameters=[{
+    "world_file": [LaunchConfiguration('world_file')],
+    "enclave": ""}]
+```
 ### 7. Exploration
 #### 7.1 Calculate explored area
 #### 7.2 Service Call
