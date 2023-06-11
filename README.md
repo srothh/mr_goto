@@ -83,6 +83,24 @@ sudo apt update
 sudo apt install libssl-dev
 colcon build --symlink-install --cmake-args -DSECURITY=ON
 ```
+
+Then the keystore has to be generated:
+```
+ros2 security create_keystore <keystore name>
+```
+In this project the keystore is in the sros2 directory and called keystore.
+
+The keys and certificates are created for each node.
+```
+ros2 security create_enclave <keystore name> <node name>
+```
+
+For the nodes to use the encryption the param ```--enclave <node name>``` is needed. Also three environment variables need to be set:
+```
+export ROS_SECURITY_KEYSTORE=<keystore name>
+export ROS_SECURITY_ENABLE=true
+export ROS_SECURITY_STRATEGY=Enforce
+```
 ### 7. Exploration
 #### 7.1 Calculate explored area
 #### 7.2 Service Call
