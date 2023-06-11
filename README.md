@@ -77,6 +77,12 @@ Will get the result:
 #### 5.3 Prameter File
 #### 5.4 Relative Path for Parameter File
 ### 6. Network (DDS-Security)
+The needed commands for installing the sros2 package are:
+```
+sudo apt update
+sudo apt install libssl-dev
+colcon build --symlink-install --cmake-args -DSECURITY=ON
+```
 ### 7. Exploration
 #### 7.1 Calculate explored area
 #### 7.2 Service Call
