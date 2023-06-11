@@ -101,6 +101,7 @@ export ROS_SECURITY_KEYSTORE=<keystore name>
 export ROS_SECURITY_ENABLE=true
 export ROS_SECURITY_STRATEGY=Enforce
 ```
+For this env_vars.sh has to be sourced.
 ### 7. Exploration
 #### 7.1 Calculate explored area
 #### 7.2 Service Call
