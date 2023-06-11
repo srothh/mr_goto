@@ -314,6 +314,10 @@ void ParticleFilter::update(const Command2DConstPtr u, double dt)
             double gamma_hut = normal_distribution_(generator_)*(param_->alpha5*v*v + param_->alpha6*w*w);
             double x_strich = x - v_hut/w_hut * sin(theta) + v_hut/w_hut * sin(theta + w_hut*dt);
             double y_strich = y + v_hut/w_hut * cos(theta) - v_hut/w_hut * cos(theta + w_hut*dt);
+            if(abs(w_hut) < std::FLT_MIN) {
+                x_strich = v*sin(theta);
+                y_strich = v*cos(theta);
+            }
             double theta_strich = theta + w_hut*dt + gamma_hut*dt;
             ParticleFilter::estimated_pose_->set(x_strich, y_strich, theta_strich);
         }
