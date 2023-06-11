@@ -34,7 +34,7 @@ restart terminal
 |5.2|20|Rita Schrabauer|
 |5.3|20|Rita Schrabauer|
 |5.4|20|Rita Schrabauer|
-|6|50|Florian Wimmer|
+|6|50|Rita Schrabauer, Florian Wimmer|
 |7.1|30|Simon Roth|
 |7.2|20|Simon Roth|
 |7.3|10|Simon Roth|
@@ -58,24 +58,43 @@ Documentation Missing
 #### 1.1 New 
 The GoTo Task was implemented in a new Python Node.
 
-<img src="docs/image/new_node.png" height="
-400">
+<img src="docs/image/new_node.png" height="350">
 
 #### 1.2 Simple, no Obstacle
-Called with the following command:
+Used Command:
 ```
 ros2 run mr_goto goto --ros-args -p mode:="plan" -p x:=-3.0 -p y:=-5.0 -p deg:=70.0 --remap scan:=base_scan
 ```
-Will get the result:
+Result:
+
+<img src="docs/image/pose.png" height="350">
 
 #### 1.3 Avoid Obstacle
 #### 1.3.1 Box
+Used Command:
+```
+ros2 run mr_goto goto --ros-args -p mode:="plan" -p x:=1.0 -p y:=-5.0 -p deg:=70.0 --remap scan:=base_scan
+```
+Result:
+
+<img src="docs/image/box.png" height="350">
+
 #### 1.3.2 Cave
+
+Used Command:
+```
+ros2 run mr_goto goto --ros-args -p mode:="plan" -p x:=-4.0 -p y:=1.0 -p deg:=70.0 --remap scan:=base_scan
+```
+Result:
+
+<img src="docs/image/cave.png" height="350">
+
 ### 5. Launch File
 #### 5.1 Basic Launch
 #### 5.2 Optional EKF or PF
 #### 5.3 Prameter File
 #### 5.4 Relative Path for Parameter File
+
 ### 6. Network (DDS-Security)
 The needed commands for installing the sros2 package are:
 ```
@@ -102,13 +121,6 @@ export ROS_SECURITY_ENABLE=true
 export ROS_SECURITY_STRATEGY=Enforce
 ```
 For this env_vars.sh has to be sourced.
-
-The launch files need to include a parameter enclave. e.g. for stage.launch.py the parameters list has to be appended by enclave:
-```
-parameters=[{
-    "world_file": [LaunchConfiguration('world_file')],
-    "enclave": ""}]
-```
 ### 7. Exploration
 #### 7.1 Calculate explored area
 #### 7.2 Service Call
