@@ -68,9 +68,9 @@ Used Command:
 ```
 ros2 run mr_goto goto --ros-args -p mode:="plan" -p x:=-3.0 -p y:=-5.0 -p deg:=70.0 --remap scan:=base_scan
 ```
-Result for just the simple navigation:
+Robot driving towards goal with just simple navigation:
 
-![Simple navigation](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExNDU4NDEzNjQxOTgzZmNjYTRlMDc5ZTlmZGM1ZTViOTQ0MzM2NTQ2NSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/CasalMKyDgtBuKjyNL/giphy.gif)
+![Simple navigation](https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExMGE2MmI5NWJhNGIxNTU4OGRkMTI4MzZjNDRlMzBhZjQ5MzU0NTUyNSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/Y4cewomNkBAZ5g1F6M/giphy.gif)
 
 Result with pose:
 
