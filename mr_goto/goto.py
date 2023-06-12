@@ -12,7 +12,7 @@ from tf_transformations import euler_from_quaternion
 class MRGoto(Node):
 
     def __init__(self):
-        super().__init__('move')
+        super().__init__('goto')
         self.publisher_ = self.create_publisher(Twist, 'cmd_vel', 10)
         self.explored_publisher_ = self.create_publisher(String,'explored',10)
         self.explored_service = self.create_service(Trigger,'explored_area',self.callback_explored)
