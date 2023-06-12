@@ -61,17 +61,26 @@ The GoTo Task was implemented in a new Python Node.
 <img src="docs/image/new_node.png" height="350">
 
 #### 1.2 Simple, no Obstacle
+To accomplish the simple goto exercise, the map was divided into grid cells of equal size. These cells all stored the cost (distance) to the cell containing the goal point. The robot navigation was executed with a simple greedy selection for the cell with the lowest distance of all the cells neighbouring the robots current position.
+
+
 Used Command:
 ```
 ros2 run mr_goto goto --ros-args -p mode:="plan" -p x:=-3.0 -p y:=-5.0 -p deg:=70.0 --remap scan:=base_scan
 ```
-Result:
+Result for just the simple navigation:
+
+![Simple navigation](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExNDU4NDEzNjQxOTgzZmNjYTRlMDc5ZTlmZGM1ZTViOTQ0MzM2NTQ2NSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/CasalMKyDgtBuKjyNL/giphy.gif)
+
+Result with pose:
 
 <img src="docs/image/pose.png" height="350">
+
 
 #### 1.3 Avoid Obstacle
 #### 1.3.1 Box
 Used Command:
+In order to accomplish this, the greedy selection from the last exercise was enhanced. The robot is discouraged from moving to close or turning towards obstacles, while it is encouraged to keep driving straight when near an obstacle. While this does not guarantee a shortest/optimal path, it works rather well.
 ```
 ros2 run mr_goto goto --ros-args -p mode:="plan" -p x:=1.0 -p y:=-5.0 -p deg:=70.0 --remap scan:=base_scan
 ```
@@ -80,6 +89,8 @@ Result:
 <img src="docs/image/box.png" height="350">
 
 #### 1.3.2 Cave
+
+The cave uses the same algorithm as the 1.3.1 assignment.
 
 Used Command:
 ```
@@ -123,7 +134,27 @@ export ROS_SECURITY_STRATEGY=Enforce
 For this env_vars.sh has to be sourced.
 ### 7. Exploration
 #### 7.1 Calculate explored area
+Every cell the robot passes through for the first time has it's area in square meters added to the total explored area, which is printed to the console every cycle.
+
+Result:
+
+<img src="docs/image/mr_explored.PNG">
+
 #### 7.2 Service Call
+
+The service is implemented in the goto.py file. The command to check it is:
+
+```
+ros2 service call /explored_area std_srvs/srv/Trigger
+```
+Result:
+
+<img src="docs/image/mr_service.PNG">
+
 #### 7.3 Topic
 
----
+The explored are is published on the explored topic. Checking this topic while the robot is running gives the current explored area:
+
+<img src="docs/image/mr_topic.PNG">
+
+
