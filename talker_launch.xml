@@ -1,0 +1,6 @@
+<launch>
+  <group>
+    <node pkg="demo_nodes_cpp" exec="talker" args="--ros-args --enclave /talker_listener/talker"/>
+  </group>
+</launch>
+
