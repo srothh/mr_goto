@@ -172,6 +172,7 @@ IncludeLaunchDescription(
   XMLLaunchDescriptionSource([xml_launch_file])
 )
 ```
+An example can be found in the directory xml_example.
 
 ### 7. Exploration
 #### 7.1 Calculate explored area
