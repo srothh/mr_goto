@@ -9,7 +9,7 @@ from tf_transformations import euler_from_quaternion
 class MRGoto(Node):
 
     def __init__(self):
-        super().__init__('move')
+        super().__init__('goto')
         self.publisher_ = self.create_publisher(Twist, 'cmd_vel', 10)
         timer_period = 0.5  # seconds
         self.declare_parameter('mode', 'demo')
@@ -55,20 +55,12 @@ class MRGoto(Node):
 
 
     def callback_laser(self, msg: LaserScan):
-        if(self.param_mode == 'demo'):
-            self.move_demo(msg)
-        elif(self.param_mode == 'wanderer'):
-            self.move_wanderer(msg)
-        elif(self.param_mode == 'move'):
-            self.move_wander2(msg)
         #GoTo
-        elif(self.param_mode == 'plan'):
+        if(self.param_mode == 'plan'):
             self.plan(msg)
         else: 
             self.cmd = Twist()
             self.get_logger().info('Unknown mode value "%s"' % self.param_mode)
-
-
 
     #GoTo
     def plan(self,msg:LaserScan):
@@ -192,84 +184,6 @@ class MRGoto(Node):
                 min_diff = diff
 
         return closest
-
-
-    # Perform other necessary actions or computations
-
-
-    def move_demo(self, msg: LaserScan):
-        self.get_logger().info('Demo')
-        nr_of_scans = len(msg.ranges)
-        self.cmd.linear.x = 0.1
-        self.cmd.angular.z = 0.0
-        if(nr_of_scans > 0):
-            
-            if(msg.ranges[round(nr_of_scans/2)] < 2. ):
-                self.cmd.linear.x = 0.0
-                if(msg.ranges[round(nr_of_scans/4)] < msg.ranges[round(3*nr_of_scans/4)]  ):
-                    self.cmd.angular.z = +0.2
-                else:
-                    self.cmd.angular.z = -0.2
-
-    def move_wanderer(self, msg: LaserScan):
-        self.get_logger().info('Wanderer')
-
-    
-
-    def move_wander(self,msg: LaserScan):
-        self.get_logger().info('moveman')
-
-        get_angular_direction = lambda a: (a<=0) - (a>0)
-        self.cmd.linear.x = 0.0
-        self.cmd.angular.z = 0.0
-        nr_of_scans = len(msg.ranges)
-
-        if(nr_of_scans > 0):
-            for i in range (-15,16):
-                if(msg.ranges[round(nr_of_scans/2) + i] < 1.5 ):
-                    self.cmd.linear.x = 0.0
-                    self.cmd.angular.z =  0.15 * (1/msg.ranges[round(nr_of_scans/2) + i]) * get_angular_direction(i)
-                else:
-                    self.cmd.linear.x = 0.8
-                    self.cmd.angular.z = 0.0
-
-
-    def move_wander2(self,msg: LaserScan):
-        get_angular_direction = lambda a: (a>0) - (a<0)
-        nr_of_scans = len(msg.ranges)
-        half = round(nr_of_scans/2)
-        obstacle = False
-        sign = 0
-        min = 25
-        if(nr_of_scans > 0):
-            for i in range (0,nr_of_scans):
-                j = i - 135
-                j = abs(0 -j)
-                #compute minimum distance needed to detect obstacle, further away from center -> obstacle needs to be closer
-                d = (1 - (j)/(half))*2
-                if(msg.ranges[i] < d):
-                    #get minimum distance for obstacle and the sign (for left/right)
-                    if msg.ranges[i] < min:
-                        min = msg.ranges[i]
-                        if i <= half:
-                            sign = 1
-                        else:
-                            sign = -1
-                    obstacle = True
-                    
-            if obstacle:
-                #stop to turn
-                self.cmd.linear.x = 0.0
-                #If already turning, keep going the same way and don't switch directions (also turn more quickly the closer the obstacle is)
-                if self.cmd.angular.z != 0:
-                    self.cmd.angular.z = 0.3*get_angular_direction(self.cmd.angular.z)
-                #When not yet turning, turn away from obstacle
-                else:
-                    self.cmd.angular.z = 0.4*sign
-            #If no obstacle, drive straight ahead
-            else:
-                self.cmd.linear.x = 0.3
-                self.cmd.angular.z = 0.0
 
 def main(args=None):
     rclpy.init(args=args)
