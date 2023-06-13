@@ -8,6 +8,12 @@ ros2 launch stage_ros2 stage.launch.py
 ### Start GoTo
 ros2 run mr_goto goto --ros-args -p mode:="plan" -p x:=-3.0 -p y:=-5.0 -p deg:=70.0 --remap scan:=base_scan
 
+### Launch GoTo
+ros2 launch mr_goto goto.launch.py
+
+### Launch Everything Everywhere All at Once
+ros2 launch mr_goto full.launch.py
+
 ### Call explored Area Service
 ros2 service call /explored_area std_srvs/srv/Trigger
 
@@ -30,11 +36,11 @@ restart terminal
 |1.2.2|25|Florian Wimmer|
 |1.3.1|25|Simon Roth|
 |1.3.2|25|Simon Roth|
-|5.1|20|Rita Schrabauer|
-|5.2|20|Rita Schrabauer|
-|5.3|20|Rita Schrabauer|
-|5.4|20|Rita Schrabauer|
-|6|50|Rita Schrabauer, Florian Wimmer|
+|5.1|20|Florian Wimmer|
+|5.2|20|Florian Wimmer|
+|5.3|20|Florian Wimmer|
+|5.4|20|Florian Wimmer|
+|6|50|Rita Schrabauer|
 |7.1|30|Simon Roth|
 |7.2|20|Simon Roth|
 |7.3|10|Simon Roth|
@@ -102,9 +108,25 @@ Result:
 
 ### 5. Launch File
 #### 5.1 Basic Launch
+A simple launch file which is calling all the nodes. 
+```
+ros2 launch mr_goto full.launch.py
+```
 #### 5.2 Optional EKF or PF
+To make EKF and PF or goto and move optional you first have to define the DeclareLaunchArguments localization and planner. Afterwards these LaunchArguments can be used in a opaque function to choose between the nodes.
+```
+localization:=ekf\
+planner:=goto
+```
 #### 5.3 Prameter File
+The parameter for the launch files is declared via DeclareLaunchArgument.
+```
+world:=cave\
+parameter_goto:=goto\
+parameter_pf:=particle_filter.yaml
+```
 #### 5.4 Relative Path for Parameter File
+The relative Paths for the Parameter files is already called like in 5.3. The implementation is done via opaque functions where the relative path is altered to an absolute path.
 
 ### 6. Network (DDS-Security)
 The needed commands for installing the sros2 package are:

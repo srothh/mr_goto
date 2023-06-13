@@ -12,22 +12,19 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
+    world_name = "cave"
+
     stage_directory = get_package_share_directory('stage_ros2')
     ekf_directory = get_package_share_directory('mr_ekf')
     pf_directory = get_package_share_directory('mr_pf')
     goto_directory = get_package_share_directory('mr_goto')
 
-    world_name = "cave"
-
-    goto_directory_param = goto_directory + "/config/goto.yaml"
-    pf_directory_param = pf_directory + "/config/particle_filter.yaml"
-
     ekf_directory_png = ekf_directory + "/config/maps/" + world_name + ".png"
     ekf_directory_yaml = ekf_directory + "/config/maps/" + world_name + ".yml"
     
+    #goto_directory_param = goto_directory + "/config/goto.yaml"
+    #pf_directory_param = pf_directory + "/config/particle_filter.yaml"
     #world_stage_directory = stage_directory + "/world/" + world_name + ".world"
-
-    print(goto_directory_param)
 
     stage = Node( #stage
             package='stage_ros2',
