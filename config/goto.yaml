@@ -1,0 +1,6 @@
+goto:
+  ros__parameters:
+    mode: "plan"
+    x: -5.0
+    y: -6.0
+    deg: 70.0
