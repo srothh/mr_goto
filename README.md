@@ -157,6 +157,22 @@ The security message can be checked via:
 ```
 sudo tcpdump -X -i any udp port 7400
 ```
+
+A node that is launched by a python launch file can include security by calling a xml launch file inside the python launch file. The xml launch file includes:
+```
+<launch>
+  <group>
+    <node pkg="package_name" exec="exec_name" args="--ros-args --enclave /node_name"/>
+  </group>
+</launch>
+```
+The python file needs following snippet inside the launch description:
+```
+IncludeLaunchDescription(
+  XMLLaunchDescriptionSource([xml_launch_file])
+)
+```
+
 ### 7. Exploration
 #### 7.1 Calculate explored area
 Every cell the robot passes through for the first time has it's area in square meters added to the total explored area, which is printed to the console every cycle.
