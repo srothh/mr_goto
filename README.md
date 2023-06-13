@@ -30,7 +30,6 @@ restart terminal
 |---|---|---|
 |0.|100%|All|
 |0.2|20|All|
-|1.0.1|20|Rita Schrabauer|
 |1.1|50|Florian Wimmer|
 |1.2.1|25|Simon Roth|
 |1.2.2|25|Florian Wimmer|
@@ -40,11 +39,11 @@ restart terminal
 |5.2|20|Florian Wimmer|
 |5.3|20|Florian Wimmer|
 |5.4|20|Florian Wimmer|
-|6|50|Rita Schrabauer|
+|6|50|Rita Schrabauer, Florian Wimmer|
 |7.1|30|Simon Roth|
 |7.2|20|Simon Roth|
 |7.3|10|Simon Roth|
-|**Sum**|**380**|**All**|
+|**Sum**|**360**|**All**|
 
 |Authors|Points(%)|
 |---|---|
@@ -54,13 +53,12 @@ restart terminal
 
 
 #### 0.2. Git usage
-Git was used during the project.
+Git was used during the project, the ropsitory can be found under the following link:
+https://github.com/srothh/mr_goto
 
 <img src="docs/image/git_graph.png">
 
 ### 1 GoTo
-#### 1.0.1 Self Localization 
-Documentation Missing
 #### 1.1 New 
 The GoTo Task was implemented in a new Python Node.
 
@@ -154,6 +152,11 @@ export ROS_SECURITY_ENABLE=true
 export ROS_SECURITY_STRATEGY=Enforce
 ```
 For this env_vars.sh has to be sourced.
+
+The security message can be checked via:
+```
+sudo tcpdump -X -i any udp port 7400
+```
 ### 7. Exploration
 #### 7.1 Calculate explored area
 Every cell the robot passes through for the first time has it's area in square meters added to the total explored area, which is printed to the console every cycle.
